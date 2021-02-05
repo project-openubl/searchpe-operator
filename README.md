@@ -1,50 +1,89 @@
-# code-with-quarkus project
+# searchpe-operator
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Start Minikube
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+```shell
+minikube start
 ```
 
-## Packaging and running the application
+For more details about minikube visit the official [documentation](https://minikube.sigs.k8s.io/docs/start/).
 
-The application can be packaged using:
-```shell script
-./mvnw package
-```
-It produces the `code-with-quarkus-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
+## Operator container image
 
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
+### Create application executable
 
-The application is now runnable using `java -jar target/code-with-quarkus-1.0.0-SNAPSHOT-runner.jar`.
+You must choose between a native executable and a JVM executable
 
-## Creating a native executable
+- Fast-jar executable:
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
+```shell
+./mvnw package -DskipTests -Dquarkus.package.type=fast-jar
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
+- Native executable:
+
+```shell
+./mvnw package -Pnative -DskipTests -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-mandrel:20.3.0.0.Final-java11
 ```
 
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
+### Create container image
 
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
+We need to create the container image inside Minikube. Point your shell to minikube's docker-daemon:
 
-# RESTEasy JAX-RS
+```shell
+eval $(minikube -p minikube docker-env)
+```
 
-<p>A Hello World RESTEasy resource</p>
+- If you are using the Fast-jar mode:
 
-Guide: https://quarkus.io/guides/rest-json
+```shell
+docker build -f src/main/docker/Dockerfile.fast-jar -t webserver-operator .
+```
+
+- If you are using the Native mode:
+
+```shell
+docker build -f src/main/docker/Dockerfile.native -t webserver-operator .
+```
+
+## Deploy the CRD
+
+```shell
+kubectl create -f k8s/crd.yaml
+```
+
+## Deploy the Operator
+
+```shell
+kubectl create -f k8s/operator.yaml
+```
+
+## Instantiate the Operator
+
+```shell
+kubectl create -f k8s/webserver.yaml -n webserver-operator
+```
+
+# Utils
+
+Get pods:
+
+```shell
+kubectl get pods -n webserver-operator
+```
+
+Scale operator deployment:
+
+```shell
+kubectl scale deployments/webserver-operator --replicas=0 -n webserver-operator
+```
+
+Delete all:
+
+```shell
+kubectl delete webserver hellows -n webserver-operator
+kubectl delete namespace webserver-operator
+kubectl delete customresourcedefinition webservers.sample.javaoperatorsdk
+kubectl delete clusterrolebinding operator-admin
+kubectl delete clusterroles webserver-operator
+```

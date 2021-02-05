@@ -1,4 +1,4 @@
-package org.acme;
+package io.github.project.openubl.searchpe;
 
 import io.quarkus.test.junit.NativeImageTest;
 
