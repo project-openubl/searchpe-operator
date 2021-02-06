@@ -1,10 +1,9 @@
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: webservers.sample.javaoperatorsdk
 spec:
   group: sample.javaoperatorsdk
-  version: v1
   scope: Namespaced
   names:
     plural: webservers
@@ -12,12 +11,16 @@ spec:
     kind: WebServer
     shortNames:
       - ws
-  validation:
-    openAPIV3Schema:
-      type: object
-      properties:
-        spec:
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
           type: object
           properties:
-            html:
-              type: string
+            spec:
+              type: object
+              properties:
+                html:
+                  type: string
