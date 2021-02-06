@@ -1,6 +1,6 @@
 package io.github.project.openubl.searchpe;
 
-public class ServiceSpec {
+public class SearchpeSpec {
 
     private String html;
 

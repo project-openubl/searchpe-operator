@@ -1,5 +1,5 @@
 apiVersion: project.openubl/v1
-kind: WebServer
+kind: Searchpe
 metadata:
   name: hellows
 spec:

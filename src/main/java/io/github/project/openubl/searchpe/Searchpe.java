@@ -7,5 +7,5 @@ import io.fabric8.kubernetes.model.annotation.Version;
 
 @Group("project.openubl")
 @Version("v1")
-public class WebServer extends CustomResource<ServiceSpec, WebServerStatus> implements Namespaced {
+public class Searchpe extends CustomResource<SearchpeSpec, SearchpeStatus> implements Namespaced {
 }

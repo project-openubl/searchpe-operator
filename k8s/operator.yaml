@@ -76,7 +76,7 @@ rules:
   - apiGroups:
       - project.openubl
     resources:
-      - webservers
+      - searchpes
     verbs:
       - "*"
   - apiGroups:

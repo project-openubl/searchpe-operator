@@ -1,6 +1,6 @@
 package io.github.project.openubl.searchpe;
 
-public class WebServerStatus {
+public class SearchpeStatus {
 
     private String htmlConfigMap;
 

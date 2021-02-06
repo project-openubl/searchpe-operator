@@ -19,47 +19,47 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-public class WebServerController implements ResourceController<WebServer> {
+public class SearchpeController implements ResourceController<Searchpe> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final KubernetesClient kubernetesClient;
 
-    public WebServerController(KubernetesClient kubernetesClient) {
+    public SearchpeController(KubernetesClient kubernetesClient) {
         this.kubernetesClient = kubernetesClient;
     }
 
     @Override
-    public UpdateControl<WebServer> createOrUpdateResource(WebServer webServer, Context<WebServer> context) {
-        if (webServer.getSpec().getHtml().contains("error")) {
+    public UpdateControl<Searchpe> createOrUpdateResource(Searchpe searchpe, Context<Searchpe> context) {
+        if (searchpe.getSpec().getHtml().contains("error")) {
             throw new ErrorSimulationException("Simulating error");
         }
 
-        String ns = webServer.getMetadata().getNamespace();
+        String ns = searchpe.getMetadata().getNamespace();
 
         Map<String, String> data = new HashMap<>();
-        data.put("index.html", webServer.getSpec().getHtml());
+        data.put("index.html", searchpe.getSpec().getHtml());
 
         ConfigMap htmlConfigMap =
                 new ConfigMapBuilder()
                         .withMetadata(
                                 new ObjectMetaBuilder()
-                                        .withName(configMapName(webServer))
+                                        .withName(configMapName(searchpe))
                                         .withNamespace(ns)
                                         .build())
                         .withData(data)
                         .build();
 
         Deployment deployment = loadYaml(Deployment.class, "deployment.yaml");
-        deployment.getMetadata().setName(deploymentName(webServer));
+        deployment.getMetadata().setName(deploymentName(searchpe));
         deployment.getMetadata().setNamespace(ns);
-        deployment.getSpec().getSelector().getMatchLabels().put("app", deploymentName(webServer));
+        deployment.getSpec().getSelector().getMatchLabels().put("app", deploymentName(searchpe));
         deployment
                 .getSpec()
                 .getTemplate()
                 .getMetadata()
                 .getLabels()
-                .put("app", deploymentName(webServer));
+                .put("app", deploymentName(searchpe));
         deployment
                 .getSpec()
                 .getTemplate()
@@ -67,11 +67,11 @@ public class WebServerController implements ResourceController<WebServer> {
                 .getVolumes()
                 .get(0)
                 .setConfigMap(
-                        new ConfigMapVolumeSourceBuilder().withName(configMapName(webServer)).build()
+                        new ConfigMapVolumeSourceBuilder().withName(configMapName(searchpe)).build()
                 );
 
         Service service = loadYaml(Service.class, "service.yaml");
-        service.getMetadata().setName(serviceName(webServer));
+        service.getMetadata().setName(serviceName(searchpe));
         service.getMetadata().setNamespace(ns);
         service.getSpec().setSelector(deployment.getSpec().getTemplate().getMetadata().getLabels());
 
@@ -98,21 +98,21 @@ public class WebServerController implements ResourceController<WebServer> {
                 kubernetesClient
                         .pods()
                         .inNamespace(ns)
-                        .withLabel("app", deploymentName(webServer))
+                        .withLabel("app", deploymentName(searchpe))
                         .delete();
             }
         }
 
-        WebServerStatus status = new WebServerStatus();
+        SearchpeStatus status = new SearchpeStatus();
         status.setHtmlConfigMap(htmlConfigMap.getMetadata().getName());
         status.setAreWeGood("Yes!");
-        webServer.setStatus(status);
+        searchpe.setStatus(status);
         //        throw new RuntimeException("Creating object failed, because it failed");
-        return UpdateControl.updateCustomResource(webServer);
+        return UpdateControl.updateCustomResource(searchpe);
     }
 
     @Override
-    public DeleteControl deleteResource(WebServer nginx, io.javaoperatorsdk.operator.api.Context<WebServer> context) {
+    public DeleteControl deleteResource(Searchpe nginx, io.javaoperatorsdk.operator.api.Context<Searchpe> context) {
         log.info("Execution deleteResource for: {}", nginx.getMetadata().getName());
 
         log.info("Deleting ConfigMap {}", configMapName(nginx));
@@ -148,15 +148,15 @@ public class WebServerController implements ResourceController<WebServer> {
         return DeleteControl.DEFAULT_DELETE;
     }
 
-    private static String configMapName(WebServer nginx) {
+    private static String configMapName(Searchpe nginx) {
         return nginx.getMetadata().getName() + "-html";
     }
 
-    private static String deploymentName(WebServer nginx) {
+    private static String deploymentName(Searchpe nginx) {
         return nginx.getMetadata().getName();
     }
 
-    private static String serviceName(WebServer nginx) {
+    private static String serviceName(Searchpe nginx) {
         return nginx.getMetadata().getName();
     }
 

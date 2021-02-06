@@ -61,7 +61,7 @@ kubectl create -f k8s/operator.yaml
 ## Instantiate the Operator
 
 ```shell
-kubectl create -f k8s/webserver.yaml -n webserver-operator
+kubectl create -f k8s/searchpe.yaml -n webserver-operator
 ```
 
 # Utils
@@ -81,9 +81,9 @@ kubectl scale deployments/webserver-operator --replicas=0 -n webserver-operator
 Delete all:
 
 ```shell
-kubectl delete webserver hellows -n webserver-operator
+kubectl delete searchpe hellows -n webserver-operator
 kubectl delete namespace webserver-operator
-kubectl delete customresourcedefinition webservers.project.openubl
+kubectl delete customresourcedefinition searchpes.project.openubl
 kubectl delete clusterrolebinding operator-admin
 kubectl delete clusterroles webserver-operator
 ```
