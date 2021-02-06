@@ -74,7 +74,7 @@ rules:
     verbs:
       - "*"
   - apiGroups:
-      - sample.javaoperatorsdk
+      - project.openubl
     resources:
       - webservers
     verbs:

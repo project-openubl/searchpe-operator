@@ -83,7 +83,7 @@ Delete all:
 ```shell
 kubectl delete webserver hellows -n webserver-operator
 kubectl delete namespace webserver-operator
-kubectl delete customresourcedefinition webservers.sample.javaoperatorsdk
+kubectl delete customresourcedefinition webservers.project.openubl
 kubectl delete clusterrolebinding operator-admin
 kubectl delete clusterroles webserver-operator
 ```
