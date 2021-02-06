@@ -37,13 +37,13 @@ eval $(minikube -p minikube docker-env)
 - If you are using the Fast-jar mode:
 
 ```shell
-docker build -f src/main/docker/Dockerfile.fast-jar -t webserver-operator .
+docker build -f src/main/docker/Dockerfile.fast-jar -t projectopenubl/searchpe-operator .
 ```
 
 - If you are using the Native mode:
 
 ```shell
-docker build -f src/main/docker/Dockerfile.native -t webserver-operator .
+docker build -f src/main/docker/Dockerfile.native -t projectopenubl/searchpe-operator .
 ```
 
 ## Deploy the CRD
@@ -61,7 +61,7 @@ kubectl create -f k8s/operator.yaml
 ## Instantiate the Operator
 
 ```shell
-kubectl create -f k8s/searchpe.yaml -n webserver-operator
+kubectl create -f k8s/searchpe.yaml -n searchpe-operator
 ```
 
 # Utils
@@ -69,21 +69,21 @@ kubectl create -f k8s/searchpe.yaml -n webserver-operator
 Get pods:
 
 ```shell
-kubectl get pods -n webserver-operator
+kubectl get pods -n searchpe-operator
 ```
 
 Scale operator deployment:
 
 ```shell
-kubectl scale deployments/webserver-operator --replicas=0 -n webserver-operator
+kubectl scale deployments/searchpe-operator --replicas=0 -n searchpe-operator
 ```
 
 Delete all:
 
 ```shell
-kubectl delete searchpe hellows -n webserver-operator
-kubectl delete namespace webserver-operator
+kubectl delete searchpe hellows -n searchpe-operator
+kubectl delete namespace searchpe-operator
 kubectl delete customresourcedefinition searchpes.project.openubl
 kubectl delete clusterrolebinding operator-admin
-kubectl delete clusterroles webserver-operator
+kubectl delete clusterroles searchpe-operator
 ```
